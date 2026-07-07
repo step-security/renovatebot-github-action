@@ -333,7 +333,7 @@ jobs:
     steps:
       - name: Get token
         id: get_token
-        uses: step-security/github-app-token@v1
+        uses: step-security/github-app-token@v2
         with:
           private-key: ${{ secrets.private_key }}
           app-id: ${{ secrets.app_id }}
