@@ -1,6 +1,6 @@
 name: 'Renovate Bot GitHub Action'
 description: 'GitHub Action to run self-hosted Renovate.'
-author: 'Jeroen de Bruijn'
+author: 'step-security'
 branding:
   icon: refresh-cw
   color: blue

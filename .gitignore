@@ -202,9 +202,6 @@ public/
 # DynamoDB Local files
 .dynamodb/
 
-# Typescript output directories
-dist/
-
 
 #####################################################
 # C                                                 #

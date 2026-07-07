@@ -1,71 +1,55 @@
 {
-  "name": "github-action",
-  "version": "0.0.0-PLACEHOLDER",
+  "name": "renovatebot-github-action",
+  "version": "46.1.18",
   "private": true,
   "description": "GitHub Action to run Renovate self-hosted.",
-  "homepage": "https://github.com/renovatebot/github-action#readme",
+  "homepage": "https://github.com/step-security/renovatebot-github-action#readme",
   "bugs": {
-    "url": "https://github.com/renovatebot/github-action/issues"
+    "url": "https://github.com/step-security/renovatebot-github-action/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/renovatebot/github-action.git"
+    "url": "git+https://github.com/step-security/renovatebot-github-action.git"
   },
   "license": "GPL-3.0-or-later",
-  "author": "Jeroen de Bruijn",
+  "author": "step-security",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "build": "run-s clean compile",
-    "clean": "rimraf dist/",
-    "compile": "node tools/compile.js",
+    "build": "rimraf dist/ && ncc build src/index.ts -o dist",
     "lint": "run-s lint-es prettier",
     "lint:fix": "run-s lint-es:fix prettier-fix",
     "lint-es": "eslint .",
     "lint-es:file": "eslint",
     "lint-es:file:fix": "eslint --fix",
     "lint-es:fix": "eslint --fix .",
-    "prepare": "husky",
     "prettier": "prettier --cache --check --ignore-unknown \"{**/*,*}.*\"",
-    "prettier-fix": "prettier --cache --write --ignore-unknown \"{**/*,*}.*\"",
-    "release": "run-s clean build semantic-release",
-    "semantic-release": "semantic-release",
-    "start": "run-s build && node dist"
+    "prettier-fix": "prettier --cache --write --ignore-unknown \"{**/*,*}.*\""
   },
   "dependencies": {
     "@actions/core": "3.0.1",
-    "@actions/exec": "3.0.0"
+    "@actions/exec": "3.0.0",
+    "axios": "^1.18.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "20.5.3",
     "@commitlint/config-conventional": "20.5.3",
     "@eslint/js": "9.39.4",
-    "@semantic-release/git": "10.0.1",
-    "@semantic-release/github": "12.0.8",
-    "@semantic-release/npm": "13.1.5",
     "@tsconfig/node24": "24.0.4",
     "@tsconfig/strictest": "2.0.8",
-    "@types/eslint-config-prettier": "6.11.3",
     "@types/node": "24.13.2",
-    "conventional-changelog-conventionalcommits": "9.3.1",
-    "esbuild": "0.28.1",
+    "@vercel/ncc": "^0.44.1",
     "eslint": "9.39.4",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-json": "4.0.1",
     "globals": "17.7.0",
-    "husky": "9.1.7",
-    "lint-staged": "17.0.8",
     "npm-run-all2": "9.0.2",
     "prettier": "3.9.4",
     "prettier-plugin-packagejson": "3.0.2",
     "rimraf": "6.1.3",
-    "semantic-release": "25.0.5",
     "typescript": "5.9.3",
     "typescript-eslint": "8.62.1"
   },
-  "packageManager": "pnpm@10.34.4",
   "engines": {
-    "node": ">=24.11.0",
-    "pnpm": "^10.0.0"
+    "node": ">=24.11.0"
   }
 }

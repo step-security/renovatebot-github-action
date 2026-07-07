@@ -10,6 +10,7 @@ export default tseslint.config(
   {
     ignores: [
       '**/.git/',
+      '**/.github/**',
       '**/.vscode',
       '**/build/',
       '**/dist/',
@@ -17,6 +18,7 @@ export default tseslint.config(
       '**/LICENSE.md',
       '**/modules/',
       '**/node_modules/',
+      '**/README*',
       '!**/.*',
     ],
   },

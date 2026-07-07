@@ -15,9 +15,13 @@ export class Renovate {
   }
 
   async runDockerContainerForVersion(): Promise<string> {
-    const command = `docker run -t --rm ${this.docker.image()} --version`;
-
-    const { exitCode, stdout } = await getExecOutput(command);
+    const { exitCode, stdout } = await getExecOutput('docker', [
+      'run',
+      '-t',
+      '--rm',
+      this.docker.image(),
+      '--version',
+    ]);
     if (exitCode !== 0) {
       new Error(`'docker run' failed with exit code ${exitCode}.`);
     }
@@ -28,19 +32,22 @@ export class Renovate {
   async runDockerContainer(): Promise<void> {
     await this.validateArguments();
 
-    const dockerArguments = this.input
-      .toEnvironmentVariables()
-      .map((e) => `--env ${e.key}`)
-      .concat([`--env ${this.input.token.key}=${this.input.token.value}`]);
+    const dockerArgs: string[] = [];
+
+    for (const e of this.input.toEnvironmentVariables()) {
+      dockerArgs.push('--env', e.key);
+    }
+    dockerArgs.push(
+      '--env',
+      `${this.input.token.key}=${this.input.token.value}`,
+    );
 
     const configurationFile = this.input.configurationFile();
     if (configurationFile !== null) {
       const baseName = path.basename(configurationFile.value);
       const mountPath = path.join(this.configFileMountDir, baseName);
-      dockerArguments.push(
-        `--env ${configurationFile.key}=${mountPath}`,
-        `--volume ${configurationFile.value}:${mountPath}`,
-      );
+      dockerArgs.push('--env', `${configurationFile.key}=${mountPath}`);
+      dockerArgs.push('--volume', `${configurationFile.value}:${mountPath}`);
     }
 
     if (this.input.mountDockerSocket()) {
@@ -51,11 +58,8 @@ export class Renovate {
           `docker socket host path '${sockPath}' MUST exist and be a socket`,
         );
       }
-
-      dockerArguments.push(
-        `--volume ${sockPath}:/var/run/docker.sock`,
-        `--group-add ${await this.getDockerGroupId()}`,
-      );
+      dockerArgs.push('--volume', `${sockPath}:/var/run/docker.sock`);
+      dockerArgs.push('--group-add', await this.getDockerGroupId());
     }
 
     const dockerCmdFile = this.input.getDockerCmdFile();
@@ -63,33 +67,31 @@ export class Renovate {
     if (dockerCmdFile !== null) {
       const baseName = path.basename(dockerCmdFile);
       const mountPath = `/${baseName}`;
-      dockerArguments.push(`--volume ${dockerCmdFile}:${mountPath}`);
+      dockerArgs.push('--volume', `${dockerCmdFile}:${mountPath}`);
       dockerCmd = mountPath;
     }
 
     const dockerUser = this.input.getDockerUser();
     if (dockerUser !== null) {
-      dockerArguments.push(`--user ${dockerUser}`);
+      dockerArgs.push('--user', dockerUser);
     }
 
     for (const volumeMount of this.input.getDockerVolumeMounts()) {
-      dockerArguments.push(`--volume ${volumeMount}`);
+      dockerArgs.push('--volume', volumeMount);
     }
 
     const dockerNetwork = this.input.getDockerNetwork();
     if (dockerNetwork) {
-      dockerArguments.push(`--network ${dockerNetwork}`);
+      dockerArgs.push('--network', dockerNetwork);
     }
 
-    dockerArguments.push('--rm', this.docker.image());
+    dockerArgs.push('--rm', this.docker.image());
 
     if (dockerCmd !== null) {
-      dockerArguments.push(dockerCmd);
+      dockerArgs.push(dockerCmd);
     }
 
-    const command = `docker run -t ${dockerArguments.join(' ')}`;
-
-    const code = await exec(command);
+    const code = await exec('docker', ['run', '-t', ...dockerArgs]);
     if (code !== 0) {
       new Error(`'docker run' failed with exit code ${code}.`);
     }

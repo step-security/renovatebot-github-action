@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@v7
         with:
           show-progress: false
 
@@ -33,14 +33,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           show-progress: false
           filter: blob:none # we don't need all blobs, only the full tree
 
       - name: Lint commit messages
-        uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6.2.1
+        uses: wagoid/commitlint-github-action@v6
         continue-on-error: true
 
   lint:
@@ -51,7 +51,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@v7
         with:
           show-progress: false
 
@@ -59,7 +59,7 @@ jobs:
         uses: ./.github/actions/setup-node
 
       - name: Lint
-        run: pnpm lint
+        run: npm run lint
 
   lint-actions:
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@v7
         with:
           show-progress: false
 
@@ -91,7 +91,7 @@ jobs:
           - example/renovate-config.json
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@v7
         with:
           show-progress: false
 
@@ -99,7 +99,7 @@ jobs:
         uses: ./.github/actions/setup-node
 
       - name: Build
-        run: pnpm build
+        run: npm run build
 
       - name: Configure renovate token
         run: |
@@ -138,7 +138,7 @@ jobs:
       options: -u 1001:0 --group-add 1000 --group-add 12021 --group-add 127
 
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@v7
         with:
           show-progress: false
 
@@ -146,54 +146,3 @@ jobs:
         working-directory: example
         run: |
           renovate-config-validator renovate-config.js renovate-config.json
-
-  release:
-    needs:
-      - lint
-      - commitlint
-      - lint-actions
-      - e2e
-      - renovate-config-validator
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Git user
-        shell: bash
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.symlinks true
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          fetch-depth: 0 # required for semantic release
-          ref: 'release'
-          show-progress: false
-          filter: blob:none # we don't need all blobs, only the full tree
-
-      - name: fetch pr
-        if: ${{github.event_name == 'pull_request'}}
-        run: git fetch origin +${{ github.sha }}:${{ github.ref }}
-
-      - name: Merge main
-        id: merge
-        run: |
-          git merge --no-ff -Xtheirs -m 'skip: merge (${{ github.sha }}) [skip release]' ${{ github.sha }}
-          commit=$(git rev-parse HEAD)
-
-      - name: 📥 Setup Node.js
-        uses: ./.github/actions/setup-node
-
-      - name: Push release branch
-        run: git push origin release:release
-        if: ${{ github.ref_name == github.event.repository.default_branch }}
-
-      - name: Release
-        run: |
-          # override for semantic-release
-          export GITHUB_REF=refs/heads/release GITHUB_SHA=${{ steps.merge.outputs.commit }}
-          pnpm release
-        if: ${{ github.ref_name == github.event.repository.default_branch }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}

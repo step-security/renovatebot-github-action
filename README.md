@@ -100,9 +100,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7
       - name: Self-hosted Renovate
-        uses: step-security/renovatebot-github-action@v46.1.18
+        uses: step-security/renovatebot-github-action@v46
         with:
           docker-cmd-file: .github/renovate-entrypoint.sh
           docker-user: root
@@ -143,9 +143,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7
       - name: Self-hosted Renovate
-        uses: step-security/renovatebot-github-action@v46.1.18
+        uses: step-security/renovatebot-github-action@v46
         with:
           token: ${{ secrets.RENOVATE_TOKEN }}
           docker-volumes: |
@@ -195,9 +195,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7
       - name: Self-hosted Renovate
-        uses: step-security/renovatebot-github-action@v46.1.18
+        uses: step-security/renovatebot-github-action@v46
         with:
           renovate-image: myproxyhub.domain.com/renovate/renovate
           token: ${{ secrets.RENOVATE_TOKEN }}
@@ -212,9 +212,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7
       - name: Self-hosted Renovate
-        uses: step-security/renovatebot-github-action@v46.1.18
+        uses: step-security/renovatebot-github-action@v46
         with:
           token: ${{ secrets.RENOVATE_TOKEN }}
 ```
@@ -234,9 +234,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7
       - name: Self-hosted Renovate
-        uses: step-security/renovatebot-github-action@v46.1.18
+        uses: step-security/renovatebot-github-action@v46
         with:
           renovate-version: 43.253.1
           token: ${{ secrets.RENOVATE_TOKEN }}
@@ -251,9 +251,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7
       - name: Self-hosted Renovate
-        uses: step-security/renovatebot-github-action@v46.1.18
+        uses: step-security/renovatebot-github-action@v46
         with:
           renovate-version: full
           token: ${{ secrets.RENOVATE_TOKEN }}
@@ -267,10 +267,6 @@ See `.github/workflows/build.yml` for an example of how to do this.
 This example uses a Personal Access Token and will run every 15 minutes.
 The Personal Access token is configured as a GitHub secret named `RENOVATE_TOKEN`.
 This example uses the [`example/renovate-config.js`](./example/renovate-config.js) file as configuration.
-Live examples with more advanced configurations of this action can be found in the following repositories:
-
-- [vidavidorra/renovate](https://github.com/vidavidorra/renovate/blob/main/.github/renovate.json)
-- [jenkinsci/helm-charts](https://github.com/jenkinsci/helm-charts/blob/main/.github/renovate-config.json5)
 
 **Remark** Update the action version to the most current, see [here](https://github.com/step-security/renovatebot-github-action/releases/latest) for latest release.
 
@@ -286,9 +282,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7
       - name: Self-hosted Renovate
-        uses: step-security/renovatebot-github-action@v46.1.18
+        uses: step-security/renovatebot-github-action@v46
         with:
           configurationFile: example/renovate-config.js
           token: ${{ secrets.RENOVATE_TOKEN }}
@@ -301,7 +297,7 @@ If you want to use the Renovate Action on a GitHub Enterprise instance you have 
 ```yml
 ....
       - name: Self-hosted Renovate
-        uses: step-security/renovatebot-github-action@v46.1.18
+        uses: step-security/renovatebot-github-action@v46
         with:
           configurationFile: example/renovate-config.js
           token: ${{ secrets.RENOVATE_TOKEN }}
@@ -320,7 +316,7 @@ Adjust your Renovate configuration file to specify the username of your bot.
 
 From the Github app configuration page, install the app in your account or your organization's account, and configure the repository access.
 
-Going forward we will be using the [`actions/create-github-app-token` action](https://github.com/actions/create-github-app-token) in order to exchange the GitHub App certificate for an access token that Renovate can use.
+Going forward we will be using the [`step-security/github-app-token` action](https://github.com/step-security/github-app-token) in order to exchange the GitHub App certificate for an access token that Renovate can use.
 
 The final workflow will look like this:
 
@@ -337,7 +333,7 @@ jobs:
     steps:
       - name: Get token
         id: get_token
-        uses: actions/create-github-app-token@v1
+        uses: step-security/github-app-token@v1
         with:
           private-key: ${{ secrets.private_key }}
           app-id: ${{ secrets.app_id }}
@@ -345,10 +341,10 @@ jobs:
           repositories: 'repo1,repo2'
 
       - name: Checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7
 
       - name: Self-hosted Renovate
-        uses: step-security/renovatebot-github-action@v46.1.18
+        uses: step-security/renovatebot-github-action@v46
         with:
           configurationFile: example/renovate-config.js
           token: '${{ steps.get_token.outputs.token }}'
@@ -363,7 +359,7 @@ For example:
 
 ```yaml
 - name: Self-hosted Renovate
-  uses: step-security/renovatebot-github-action@v46.1.18
+  uses: step-security/renovatebot-github-action@v46
   with:
     token: '${{ steps.get_token.outputs.token }}'
   env:
@@ -385,9 +381,9 @@ For example if you wish to pass through some credentials for a [host rule](https
        runs-on: ubuntu-latest
        steps:
          - name: Checkout
-           uses: actions/checkout@v6.0.3
+           uses: actions/checkout@v7
          - name: Self-hosted Renovate
-           uses: step-security/renovatebot-github-action@v46.1.18
+           uses: step-security/renovatebot-github-action@v46
            with:
              configurationFile: example/renovate-config.js
              token: ${{ secrets.RENOVATE_TOKEN }}
@@ -422,9 +418,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7
       - name: Self-hosted Renovate
-        uses: step-security/renovatebot-github-action@v46.1.18
+        uses: step-security/renovatebot-github-action@v46
         with:
           configurationFile: example/renovate-config.js
           token: ${{ secrets.RENOVATE_TOKEN }}
@@ -478,7 +474,7 @@ jobs:
     name: Renovate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       # This third party action allows you to download the cache artifact from different workflow runs
       # Note that actions/cache doesn't work well because the cache key would need to be computed from
@@ -486,7 +482,7 @@ jobs:
       # cache wouldn't necessarily upload when it changes. actions/download-artifact also doesn't work
       # because it only handles artifacts uploaded in the same run, and we want to restore from the
       # previous successful run.
-      - uses: dawidd6/action-download-artifact@v2
+      - uses: step-security/action-download-artifact@v2
         if: github.event.inputs.repoCache != 'disabled'
         continue-on-error: true
         with:
@@ -515,7 +511,7 @@ jobs:
           sudo chown -R 12021:0 /tmp/renovate/
           ls -R $cache_dir
 
-      - uses: step-security/renovatebot-github-action@v46.1.18
+      - uses: step-security/renovatebot-github-action@v46
         with:
           configurationFile: renovate.json5
           token: ${{ secrets.RENOVATE_TOKEN }}
@@ -533,7 +529,7 @@ jobs:
           # To solve *that*, we'd have to extract to root (/), which isn't safe.
           tar -czvf $cache_archive -C $cache_dir .
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: github.event.inputs.repoCache != 'disabled'
         with:
           name: ${{ env.cache_key }}
@@ -553,7 +549,7 @@ To enable debug logging, add the environment variable `LOG_LEVEL: 'debug'` to th
 
 ```yml
 - name: Self-hosted Renovate
-  uses: step-security/renovatebot-github-action@v46.1.18
+  uses: step-security/renovatebot-github-action@v46
   with:
     configurationFile: example/renovate-config.js
     token: ${{ secrets.RENOVATE_TOKEN }}
