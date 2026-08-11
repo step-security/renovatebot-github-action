@@ -175,10 +175,14 @@ The name of the secret can be anything as long as it matches the argument given 
 Fine-grained Personal Access Tokens are now supported, as GitHub has [implemented GraphQL API support for them](https://github.com/github/roadmap/issues/622).
 However, some permission gaps may remain (for example, around `Checks` access), so a classic token is still the safer default if you run into authentication or automerge limitations.
 
-Note that the [`GITHUB_TOKEN`](https://help.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token#permissions-for-the-github_token) secret can't be used for authenticating Renovate because it has too restrictive permissions.
-In particular, using the `GITHUB_TOKEN` to create a new `Pull Request` from more types of Github Workflows results in `Pull Requests` that [do not trigger your `Pull Request` and `Push` CI events](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow).
-
 If you want to use the `github-actions` manager, you must setup a [special token](#special-token-requirements-when-using-the-github-actions-manager) with some requirements.
+
+> [!NOTE]
+> [`GITHUB_TOKEN`](https://help.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token#permissions-for-the-github_token)
+> can be also used; however, workflows run on RenovateBot's PRs will need to be [manually approved](https://github.blog/changelog/2026-06-11-bot-created-pull-requests-can-run-workflows-if-approved/).
+>
+> Additionally, ["Allow GitHub Actions to create and approve pull requests"](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#preventing-github-actions-from-creating-or-approving-pull-requests)
+> needs to be enabled on the repository or organisation level.
 
 ### `renovate-image`
 
@@ -225,7 +229,7 @@ The Renovate version to use.
 If omitted the action will use the [`default version`](./action.yml#L28) Docker tag.
 Check [the available tags on Docker Hub](https://hub.docker.com/r/renovate/renovate/tags).
 
-This sample will use `ghcr.io/renovatebot/renovate:43.253.1` image.
+This sample will use `ghcr.io/renovatebot/renovate:44.7.2` image.
 
 ```yml
 ....
@@ -238,7 +242,7 @@ jobs:
       - name: Self-hosted Renovate
         uses: step-security/renovatebot-github-action@v46
         with:
-          renovate-version: 43.253.1
+          renovate-version: 44.7.2
           token: ${{ secrets.RENOVATE_TOKEN }}
 ```
 
@@ -368,7 +372,9 @@ For example:
 
 ## Environment Variables
 
-If you wish to pass through environment variables through to the Docker container that powers this action you need to prefix the environment variable with `RENOVATE_`.
+Environment variables prefixed with `RENOVATE_` are passed through to the Docker container automatically. This prefix is reserved for [Renovate self-hosted configuration](https://docs.renovatebot.com/self-hosted-configuration/), so using it for unrelated credentials can accidentally conflict with a Renovate option.
+
+For custom credentials, use a distinct prefix and add the variable to [`env-regex`](#passing-other-environment-variables).
 
 For example if you wish to pass through some credentials for a [host rule](https://docs.renovatebot.com/configuration-options/#hostrules) to the `config.js` then you should do so like this.
 
@@ -387,8 +393,9 @@ For example if you wish to pass through some credentials for a [host rule](https
            with:
              configurationFile: example/renovate-config.js
              token: ${{ secrets.RENOVATE_TOKEN }}
+             env-regex: "^(?:RENOVATE_\\w+|LOG_LEVEL|GITHUB_COM_TOKEN|NODE_OPTIONS|NO_COLOR|(?:HTTPS?|NO)_PROXY|(?:https?|no)_proxy|CUSTOM_TFE_TOKEN)$"
            env:
-             RENOVATE_TFE_TOKEN: ${{ secrets.MY_TFE_TOKEN }}
+             CUSTOM_TFE_TOKEN: ${{ secrets.MY_TFE_TOKEN }}
    ```
 
 1. In `example/renovate-config.js` include the hostRules block
@@ -399,7 +406,7 @@ For example if you wish to pass through some credentials for a [host rule](https
        {
          hostType: 'terraform-module',
          matchHost: 'app.terraform.io',
-         token: process.env.RENOVATE_TFE_TOKEN,
+         token: process.env.CUSTOM_TFE_TOKEN,
        },
      ],
    };
@@ -515,7 +522,7 @@ jobs:
         with:
           configurationFile: renovate.json5
           token: ${{ secrets.RENOVATE_TOKEN }}
-          renovate-version: 43.253.1
+          renovate-version: 44.7.2
         env:
           # This enables the cache -- if this is set, it's not necessary to add it to renovate.json.
           RENOVATE_REPOSITORY_CACHE: ${{ github.event.inputs.repoCache || 'enabled' }}

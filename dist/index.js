@@ -44162,7 +44162,7 @@ class Input {
 
 class Docker {
     static image = 'ghcr.io/renovatebot/renovate';
-    static version = '43'; // renovate
+    static version = '44'; // renovate
     dockerImage;
     fullTag;
     constructor(input) {
