@@ -229,7 +229,7 @@ The Renovate version to use.
 If omitted the action will use the [`default version`](./action.yml#L28) Docker tag.
 Check [the available tags on Docker Hub](https://hub.docker.com/r/renovate/renovate/tags).
 
-This sample will use `ghcr.io/renovatebot/renovate:44.14.10` image.
+This sample will use `ghcr.io/renovatebot/renovate:44.14.12` image.
 
 ```yml
 ....
@@ -242,7 +242,7 @@ jobs:
       - name: Self-hosted Renovate
         uses: step-security/renovatebot-github-action@v46
         with:
-          renovate-version: 44.14.10
+          renovate-version: 44.14.12
           token: ${{ secrets.RENOVATE_TOKEN }}
 ```
 
@@ -522,7 +522,7 @@ jobs:
         with:
           configurationFile: renovate.json5
           token: ${{ secrets.RENOVATE_TOKEN }}
-          renovate-version: 44.14.10
+          renovate-version: 44.14.12
         env:
           # This enables the cache -- if this is set, it's not necessary to add it to renovate.json.
           RENOVATE_REPOSITORY_CACHE: ${{ github.event.inputs.repoCache || 'enabled' }}
