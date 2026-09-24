@@ -17,7 +17,6 @@ export class Renovate {
   async runDockerContainerForVersion(): Promise<string> {
     const { exitCode, stdout } = await getExecOutput('docker', [
       'run',
-      '-t',
       '--rm',
       this.docker.image(),
       '--version',
@@ -91,7 +90,7 @@ export class Renovate {
       dockerArgs.push(dockerCmd);
     }
 
-    const code = await exec('docker', ['run', '-t', ...dockerArgs]);
+    const code = await exec('docker', ['run', ...dockerArgs]);
     if (code !== 0) {
       new Error(`'docker run' failed with exit code ${code}.`);
     }

@@ -44085,9 +44085,15 @@ class Input {
         const envRegex = envRegexInput
             ? new RegExp(envRegexInput)
             : this.options.envRegex;
+        const additionalEnvVarNames = getMultilineInput('additional-env-list');
         this._environmentVariables = new Map(Object.entries(process.env)
-            .filter(([key]) => envRegex.test(key))
+            .filter(([key]) => envRegex.test(key) || additionalEnvVarNames.includes(key))
             .filter((pair) => pair[1] !== undefined));
+        for (const name of additionalEnvVarNames) {
+            if (!this._environmentVariables.has(name)) {
+                warning(`Environment variable '${name}' listed in 'additional-env-list' was not found in the parent process environment; it will not be passed to the renovate container.`);
+            }
+        }
         this.token = this.get(this.options.token.input, this.options.token.env, this.options.token.optional);
         this._configurationFile = this.get(this.options.configurationFile.input, this.options.configurationFile.env, this.options.configurationFile.optional);
     }
@@ -44204,7 +44210,6 @@ class Renovate {
     async runDockerContainerForVersion() {
         const { exitCode, stdout } = await getExecOutput('docker', [
             'run',
-            '-t',
             '--rm',
             this.docker.image(),
             '--version',
@@ -44260,7 +44265,7 @@ class Renovate {
         if (dockerCmd !== null) {
             dockerArgs.push(dockerCmd);
         }
-        const code = await exec_exec('docker', ['run', '-t', ...dockerArgs]);
+        const code = await exec_exec('docker', ['run', ...dockerArgs]);
         if (code !== 0) {
             new Error(`'docker run' failed with exit code ${code}.`);
         }
