@@ -17,6 +17,8 @@ export class Renovate {
   async runDockerContainerForVersion(): Promise<string> {
     const { exitCode, stdout } = await getExecOutput('docker', [
       'run',
+      '--env',
+      'FORCE_COLOR=3',
       '--rm',
       this.docker.image(),
       '--version',
@@ -40,6 +42,7 @@ export class Renovate {
       '--env',
       `${this.input.token.key}=${this.input.token.value}`,
     );
+    dockerArgs.push('--env', 'FORCE_COLOR=3');
 
     const configurationFile = this.input.configurationFile();
     if (configurationFile !== null) {

@@ -45578,6 +45578,8 @@ class Renovate {
     async runDockerContainerForVersion() {
         const { exitCode, stdout } = await getExecOutput('docker', [
             'run',
+            '--env',
+            'FORCE_COLOR=3',
             '--rm',
             this.docker.image(),
             '--version',
@@ -45594,6 +45596,7 @@ class Renovate {
             dockerArgs.push('--env', e.key);
         }
         dockerArgs.push('--env', `${this.input.token.key}=${this.input.token.value}`);
+        dockerArgs.push('--env', 'FORCE_COLOR=3');
         const configurationFile = this.input.configurationFile();
         if (configurationFile !== null) {
             const baseName = external_node_path_default().basename(configurationFile.value);
