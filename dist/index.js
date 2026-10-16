@@ -45534,11 +45534,15 @@ class Input {
 class Docker {
     static image = 'ghcr.io/renovatebot/renovate';
     static version = '44'; // renovate
-    dockerImage;
-    fullTag;
+    fullImageReference;
     constructor(input) {
         let image = input.getDockerImage();
         let version = input.getVersion();
+        if (image?.includes(':')) {
+            info(`Docker image looks like it contains a version, using that as the image itself`);
+            this.fullImageReference = image;
+            return;
+        }
         if (!image) {
             warning(`No Docker image specified, using ${Docker.image}`);
             image = Docker.image;
@@ -45547,11 +45551,10 @@ class Docker {
             warning(`No Docker version specified, using ${Docker.version}`);
             version = Docker.version;
         }
-        this.dockerImage = image;
-        this.fullTag = version;
+        this.fullImageReference = `${image}:${version}`;
     }
     image() {
-        return `${this.dockerImage}:${this.fullTag}`;
+        return this.fullImageReference;
     }
 }
 
@@ -45575,6 +45578,8 @@ class Renovate {
     async runDockerContainerForVersion() {
         const { exitCode, stdout } = await getExecOutput('docker', [
             'run',
+            '--env',
+            'FORCE_COLOR=3',
             '--rm',
             this.docker.image(),
             '--version',
@@ -45591,6 +45596,7 @@ class Renovate {
             dockerArgs.push('--env', e.key);
         }
         dockerArgs.push('--env', `${this.input.token.key}=${this.input.token.value}`);
+        dockerArgs.push('--env', 'FORCE_COLOR=3');
         const configurationFile = this.input.configurationFile();
         if (configurationFile !== null) {
             const baseName = external_node_path_default().basename(configurationFile.value);

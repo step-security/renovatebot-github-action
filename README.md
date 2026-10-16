@@ -229,13 +229,30 @@ jobs:
           token: ${{ secrets.RENOVATE_TOKEN }}
 ```
 
+It is also possible to specify a full Docker image pinned to a version (and optionally, a digest) like so:
+
+```yml
+....
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+      - name: Self-hosted Renovate
+        uses: step-security/renovatebot-github-action@v46
+        with:
+          renovate-image: ghcr.io/renovatebot/renovate@sha256:0f7ba2b70c5d1a7e2d95b0f6c3d5b4a1e2f6b6a1e2f6b6a1e2f6b6a1e2f6b6a1
+          token: ${{ secrets.RENOVATE_TOKEN }}
+```
+
 ### `renovate-version`
 
 The Renovate version to use.
 If omitted the action will use the [`default version`](./action.yml#L28) Docker tag.
 Check [the available tags on Docker Hub](https://hub.docker.com/r/renovate/renovate/tags).
 
-This sample will use `ghcr.io/renovatebot/renovate:44.17.1` image.
+This sample will use `ghcr.io/renovatebot/renovate:44.151.0` image.
 
 ```yml
 ....
@@ -248,7 +265,7 @@ jobs:
       - name: Self-hosted Renovate
         uses: step-security/renovatebot-github-action@v46
         with:
-          renovate-version: 44.17.1
+          renovate-version: 44.151.0
           token: ${{ secrets.RENOVATE_TOKEN }}
 ```
 
@@ -554,7 +571,7 @@ jobs:
         with:
           configurationFile: renovate.json5
           token: ${{ secrets.RENOVATE_TOKEN }}
-          renovate-version: 44.17.1
+          renovate-version: 44.151.0
         env:
           # This enables the cache -- if this is set, it's not necessary to add it to renovate.json.
           RENOVATE_REPOSITORY_CACHE: ${{ github.event.inputs.repoCache || 'enabled' }}
