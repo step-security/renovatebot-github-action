@@ -34,11 +34,11 @@ GitHub Action to run Renovate self-hosted.
 
 ## Badges
 
-| Badge                                                                                                                                                                                                                   | Description  | Service              |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------------- |
-| <a href="https://github.com/prettier/prettier#readme"><img alt="code style" src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square"></a>                                                    | Code style   | Prettier             |
-| <a href="https://conventionalcommits.org"><img alt="Conventional Commits: 1.0.0" src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square"></a>                                      | Commit style | Conventional Commits |
-| <a href="https://renovatebot.com"><img alt="Renovate enabled" src="https://img.shields.io/badge/renovate-enabled-brightgreen.svg?style=flat-square"></a>                                                                | Dependencies | Renovate             |
+| Badge                                                                                                                                                                                                                                               | Description  | Service              |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------------- |
+| <a href="https://github.com/prettier/prettier#readme"><img alt="code style" src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square"></a>                                                                                | Code style   | Prettier             |
+| <a href="https://conventionalcommits.org"><img alt="Conventional Commits: 1.0.0" src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square"></a>                                                                  | Commit style | Conventional Commits |
+| <a href="https://renovatebot.com"><img alt="Renovate enabled" src="https://img.shields.io/badge/renovate-enabled-brightgreen.svg?style=flat-square"></a>                                                                                            | Dependencies | Renovate             |
 | <a href="https://github.com/step-security/renovatebot-github-action/actions"><img alt="GitHub workflow status" src="https://img.shields.io/github/actions/workflow/status/step-security/renovatebot-github-action/build.yml?style=flat-square"></a> | Build        | GitHub Actions       |
 
 ## Options
@@ -252,7 +252,7 @@ The Renovate version to use.
 If omitted the action will use the [`default version`](./action.yml#L28) Docker tag.
 Check [the available tags on Docker Hub](https://hub.docker.com/r/renovate/renovate/tags).
 
-This sample will use `ghcr.io/renovatebot/renovate:44.167.5` image.
+This sample will use `ghcr.io/renovatebot/renovate:44.222.5` image.
 
 ```yml
 ....
@@ -265,7 +265,7 @@ jobs:
       - name: Self-hosted Renovate
         uses: step-security/renovatebot-github-action@v46
         with:
-          renovate-version: 44.167.5
+          renovate-version: 44.222.5
           token: ${{ secrets.RENOVATE_TOKEN }}
 ```
 
@@ -571,7 +571,7 @@ jobs:
         with:
           configurationFile: renovate.json5
           token: ${{ secrets.RENOVATE_TOKEN }}
-          renovate-version: 44.167.5
+          renovate-version: 44.222.5
         env:
           # This enables the cache -- if this is set, it's not necessary to add it to renovate.json.
           RENOVATE_REPOSITORY_CACHE: ${{ github.event.inputs.repoCache || 'enabled' }}
