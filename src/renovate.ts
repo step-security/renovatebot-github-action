@@ -1,8 +1,8 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { exec, getExecOutput } from '@actions/exec';
 import { Docker } from './docker';
 import { Input } from './input';
-import fs from 'node:fs/promises';
-import path from 'node:path';
 
 export class Renovate {
   static dockerGroupRegex = /^docker:x:(?<groupId>[1-9][0-9]*):/m;
@@ -24,7 +24,7 @@ export class Renovate {
       '--version',
     ]);
     if (exitCode !== 0) {
-      new Error(`'docker run' failed with exit code ${exitCode}.`);
+      throw new Error(`'docker run' failed with exit code ${exitCode}.`);
     }
 
     return stdout.trim();
@@ -38,10 +38,7 @@ export class Renovate {
     for (const e of this.input.toEnvironmentVariables()) {
       dockerArgs.push('--env', e.key);
     }
-    dockerArgs.push(
-      '--env',
-      `${this.input.token.key}=${this.input.token.value}`,
-    );
+    dockerArgs.push('--env', `${this.input.token.key}=${this.input.token.value}`);
     dockerArgs.push('--env', 'FORCE_COLOR=3');
 
     const configurationFile = this.input.configurationFile();
@@ -56,9 +53,7 @@ export class Renovate {
       const sockPath = this.input.dockerSocketHostPath();
       const stat = await fs.stat(sockPath);
       if (!stat.isSocket()) {
-        throw new Error(
-          `docker socket host path '${sockPath}' MUST exist and be a socket`,
-        );
+        throw new Error(`docker socket host path '${sockPath}' MUST exist and be a socket`);
       }
       dockerArgs.push('--volume', `${sockPath}:/var/run/docker.sock`);
       dockerArgs.push('--group-add', await this.getDockerGroupId());
@@ -95,7 +90,7 @@ export class Renovate {
 
     const code = await exec('docker', ['run', ...dockerArgs]);
     if (code !== 0) {
-      new Error(`'docker run' failed with exit code ${code}.`);
+      throw new Error(`'docker run' failed with exit code ${code}.`);
     }
   }
 
@@ -131,13 +126,8 @@ export class Renovate {
     }
 
     const configurationFile = this.input.configurationFile();
-    if (
-      configurationFile !== null &&
-      !(await fs.stat(configurationFile.value)).isFile()
-    ) {
-      throw new Error(
-        `configuration file '${configurationFile.value}' MUST be an existing file`,
-      );
+    if (configurationFile !== null && !(await fs.stat(configurationFile.value)).isFile()) {
+      throw new Error(`configuration file '${configurationFile.value}' MUST be an existing file`);
     }
   }
 }
